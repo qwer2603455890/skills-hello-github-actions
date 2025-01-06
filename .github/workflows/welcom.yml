@@ -1,0 +1,41 @@
+name: Summarize News with AI
+on:
+  push:
+    branches:
+      -main
+  pull_request:
+    branches:
+      -main
+  schedule:
+    -cron: "31 2 * * *"
+workflow_dispatch:
+
+
+jobs:
+  summarize_news:
+    runs-on: ubuntu-latest
+    steps: # 步骤1: 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
+        # 步骤2: 设置 Python 环境
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with: python-version:'3.10'
+        # 步骤3: 安装依赖项
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade
+          pip     pip install -r requirements.txt
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install 
+          # 安装 Playwright 所需的浏览器
+          # 步骤 4: 运行爬虫并调用 AI 模型进行总结
+      - name: Run the script
+        run: |
+          python main.py
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }} # 使用 GitHub Secrets 存储 API 密钥
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
